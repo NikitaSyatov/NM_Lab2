@@ -279,8 +279,7 @@ void method_balance(int n, int choose = 1) //choose = 1 - test, choose = 0 - mai
 
 int main()
 {
-    method_balance(3, 0);
+    method_balance(5, 1);
 
     return 0;
 }
-

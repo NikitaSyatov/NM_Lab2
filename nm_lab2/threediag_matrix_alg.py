@@ -1,6 +1,7 @@
 def Progonka(matrix_n_3,vector_b,size_n):
     Matrix = matrix_n_3
     n = size_n
+    sn = n-1
     ans = vector_b
 
     y = []
@@ -11,37 +12,74 @@ def Progonka(matrix_n_3,vector_b,size_n):
     A = []
     B = []
     C = []
-    for i in range(n):
-        if (i!=n-1):
-            A.append(Matrix[i + 1][2])
-        if (i!=0):
-            B.append(Matrix[i][0])
-        C.append(Matrix[i][1]*((-1)+2*(i==0)))
-    C.append(1)
-    a.append(0)
-    a.append((-1)*B[0])
-    b.append(0)
-    b.append(ans[0])
+
+    mu1 = ans[0]
+    mu2 = ans[sn]
+
+    hi1 = Matrix[1][0]*(-1.0)
+    hi2 = Matrix[sn-1][2]*(-1.0)
+
+    A.append(0)
+    B.append(0)
+    C.append(0)
+
+    for i in range(0,sn-1):
+        A.append(Matrix[i][2])
+
+    for i in range(1,sn):
+        C.append(Matrix[i][1]*(-1))
 
 
     for i in range(2,n):
-        a.append(B[i-1]/(C[i-1]-A[i-1]*a[i-1]))
-        b.append((((-1)+2*(i-1==0))*ans[i-1]+A[i-1]*b[i-1])/(C[i-1]-A[i-1]*a[i-1]))
+        B.append(Matrix[i][0])
 
-    y[n-1] = ((A[n-2])*b[n-1]-ans[n-1])/((-1)*A[n-2]*a[n-1] - 1)
+    for i in range(0,n):
+        a.append(0)
+        b.append(0)
+    # print("A = ", A)
+    # print("B = ", B)
+    # print("C = ", C)
+    # print("a = ", a)
+    # print("b = ", b)
+
+    a[1] = hi1
+    b[1] = mu1
+
+    for i in range(1,n-1):
+        a[i+1] = B[i]/(C[i]-A[i]*a[i])
+        b[i+1] = ((-1)*ans[i]+A[i]*b[i])/(C[i]-A[i]*a[i])
+
+    y[n-1] = ((-1)*hi2*b[sn]-mu2)/(hi2*a[sn]-1.0)
 
     for i in range(n-2,-1,-1):
-        y[i] = (a[i+1]*y[i+1]+b[i+1])
 
+        y[i] = a[i+1]*y[i+1]+b[i+1]
 
     return y
-#1, 1, 0, 0 = 1           #1,2,3,4
-#0, 1, 0, 0 = 2         #1,2,3,4
-#0, 0, 1, 0 = 3
-#0, 0, 0, 1 = 4
-# A = [[1, 0, 0, 0],[0, 1, 0, 0],[0, 0, 1, 0],[0, 0, 0, 1]]
-# c = [1,2,3,4]
-# s = 4
-# A = [[0,1,0],[0,1,0],[0,1,0],[0,1,0]]
 
-# print(Progonka(A,c,s))
+# c = [0,0,0,0]
+# A = [[],[],[],[]]
+# A[0] = [1, -1, 0, 0]; c[0] = -1
+# A[1] = [2, 1, 2, 0]; c[1] = 10
+# A[2] = [0, -1, 1, -5]; c[2] = -19
+# A[3] = [0, 0, 2, 1]; c[3] = 10
+
+
+# A[0] = [0,1,2]; c[0] = -1
+# A[1] = [-1,1,-1]; c[1] = 10
+# A[2] = [2,1,2]; c[2] = -19
+# A[3] = [-5,1,0]; c[3] = 10
+
+s = 4
+# P = ""
+# for i in range(0,s):
+#     k = 0
+#     for j in range(0,s):
+#         P+=(f" + "*((j!=0 and k!=0) and A[i][j]>=0)+f"{A[i][j]}"*(A[i][j]!=1 and A[i][j]!=-1)+"-"*((A[i][j]==-1))+f"y{j}")*(A[i][j]!=0)
+#         k+=(A[i][j]!=0)
+#     P+=f" = {c[i]}\n"
+# print(P)
+
+
+
+# print("Answer",Progonka(A,c,s))

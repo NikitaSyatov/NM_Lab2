@@ -2,7 +2,7 @@ def Progonka(matrix_n_3,vector_b):
     input_A = matrix_n_3
     Matrix = []
     n = len(vector_b)
-    print(n)
+    # print(n)
     Matrix.append([0, input_A[0][0], input_A[1][0]])
     Matrix.append([0, input_A[1][1], input_A[2][0]])
     for i in range(2, n-2):
@@ -54,14 +54,14 @@ def Progonka(matrix_n_3,vector_b):
     # print("a = ", a)
     # print("b = ", b)
 
-    a[1] = hi1
+    a[1] = 0
     b[1] = mu1
 
     for i in range(1,n-1):
         a[i+1] = B[i]/(C[i]-A[i]*a[i])
         b[i+1] = ((-1)*ans[i]+A[i]*b[i])/(C[i]-A[i]*a[i])
 
-    y[n-1] = ((-1)*hi2*b[sn]-mu2)/(hi2*a[sn]-1.0)
+    y[n-1] = mu2
 
     for i in range(n-2,-1,-1):
 

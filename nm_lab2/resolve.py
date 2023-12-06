@@ -2,7 +2,7 @@
 
 import math
 from scipy import integrate
-from new_progon import Progonka
+from threediag_matrix_alg import Progonka
 
 # In[0]: константы для истинного решения тестовой задачи
 CONST = [[0.7348403689121157, -1.7348403689121157], [-0.6706091081659652, -3.6275438934922134]]
@@ -119,10 +119,11 @@ def method_balance(n, sel):
     
     step = 1/n
     n += 1
+    xi = 1
 
     matrix_A.append([1, 0, 0])
     vector_b.append(MU1)
-
+    
     for i in range(1, n-1):
         xi = i*step
         matrix_A.append([calc_ai(xi, step, sel)/(step*step),

@@ -1,6 +1,18 @@
-def Progonka(matrix_n_3,vector_b,size_n):
-    Matrix = matrix_n_3
-    n = size_n
+def Progonka(matrix_n_3,vector_b):
+    input_A = matrix_n_3
+    Matrix = []
+    n = len(vector_b)
+    print(n)
+    Matrix.append([0, input_A[0][0], input_A[1][0]])
+    Matrix.append([0, input_A[1][1], input_A[2][0]])
+    for i in range(2, n-2):
+        # print(i)
+        Matrix.append([input_A[i-1][2], input_A[i][1], input_A[i+1][0]])
+    Matrix.append([input_A[-2][-1], input_A[-3][-2], 0])
+    Matrix.append([input_A[-2][-1], 1, 0])
+
+    print(Matrix)
+    
     sn = n-1
     ans = vector_b
 

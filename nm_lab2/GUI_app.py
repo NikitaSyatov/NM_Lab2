@@ -94,6 +94,7 @@ while True:                             # The Event Loop
         break
     if event == 'Submit':
         selector = values['-SELECTOR-']
+        n = int(window.Element("-N-").Get())
 
         # df = pd.read_table('output.txt', sep = "\t+", engine='python')
 
@@ -106,7 +107,7 @@ while True:                             # The Event Loop
         print(selector)
 
         # list_x = [xi for xi in np.arange(0, 1, 0.0001)]
-        x, v = method_balance(2, 1)
+        x, v = method_balance(n, 1)
         list_u = [u(xi) for xi in x]
         graf = plt.plot(x, list_u, "b-")
         graf = plt.plot(x, v, "r-")

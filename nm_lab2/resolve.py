@@ -5,7 +5,7 @@ from scipy import integrate
 from new_progon import Progonka
 
 # In[0]: константы для истинного решения тестовой задачи
-CONST = [[0.7348403689121157, -1.7348403689121157], [-0.6706091081659652, -3.6275438934922134]]
+CONST = [[0.060557222866650, -1.060557222866650], [-0.472024550734437, -4.331084823580058]]
 
 # In[1]: константы для начального и конечного узла, точка разрыва кси
 KSI = 0.4
@@ -14,10 +14,10 @@ MU2 = 1
 
 # In[2]: функции для решения тестовой задачи
 def test_k1(x):
-    return 5.0/7.0
+    return 1.4
 
 def test_k2(x):
-    return 5.0/2.0
+    return 0.4
 
 def test_q1(x):
     return 0.4
@@ -144,9 +144,9 @@ def method_balance(n, sel):
     
     for i in range(1, n-1):
         xi = i*step
-        print(calc_di(xi, step, sel))
+        # print(calc_di(xi, step, sel))
         matrix_A.append([calc_ai(xi, step, sel)/(step*step),
-                          -(calc_ai(xi, step, sel)+calc_ai(xi+step, step, sel))/(step*step)-1,
+                          -(calc_ai(xi, step, sel)+calc_ai(xi+step, step, sel))/(step*step)-calc_di(xi, step, sel),
                            calc_ai(xi+step, step, sel)/(step*step)])
         vector_b.append(-calc_phi_i(xi, step, sel))
 

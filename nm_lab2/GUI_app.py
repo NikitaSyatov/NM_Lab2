@@ -14,15 +14,15 @@ import tkinter as tk
 import sys
 import traceback
 from resolve import u, method_balance
-import numpy as np
+import math
 
 # In[]:
 
 df_tmp = pd.DataFrame({
-    '    1    ': [],
-    '    2    ': [],
-    '    3    ': [],
-    '    4    ': [],
+    '     1     ': [],
+    '     2     ': [],
+    '       3       ': [],
+    '       4       ': [],
 })
 
 fig, graf = plt.subplots(figsize=(5, 5))
@@ -31,24 +31,23 @@ fig, graf = plt.subplots(figsize=(5, 5))
 list_q = ['Тестовая', 'Основная']
 
 frame_output_data = [
-    [sg.Output(size=(55, 17), key="-DATA-")],
-    [sg.Button("Clear", size=(55, 1))],
+    [sg.Output(size=(100, 17), key="-DATA-")],
+    [sg.Button("Clear", size=(100, 1))],
 ]
 
 # In[]:
 column1 = [
     [sg.DropDown(list_q, default_value=list_q[0], size=(25, 1), key='-SELECTOR-')],
     [sg.Text("Количество участков разбиений", size=(50, 1))],
-    [sg.InputText(default_text="2", size=(30, 1), key='-N-')],
+    [sg.InputText(default_text="2", size=(27, 1), key='-N-')],
     [sg.Submit(size=(24, 1))],
     [sg.Exit(size=(24, 1))]
 ]
 
 column_table = [
     [sg.Table(values=df_tmp.values.tolist(), headings=df_tmp.columns.tolist(),
-            alternating_row_color='darkblue', key='-TABLE-',
-            row_height = 25, vertical_scroll_only=False, size=(200, 100),
-            justification='left')],
+            alternating_row_color='darkblue', key='-TABLE-', vertical_scroll_only = False,
+            row_height = 25, size=(500, 19), justification='left')],
 ]
 
 column_graf = [
@@ -59,11 +58,11 @@ column_graf = [
 layout = [
     [sg.Column(column1), sg.VerticalSeparator(), sg.Frame("Данные", frame_output_data, element_justification='right')],
     [sg.HorizontalSeparator()],
-    [sg.Frame("Таблица точек", column_table, size=(500, 500), key='-SIZETABLE-'), sg.VerticalSeparator(), sg.Column(column_graf, size=(500, 500), justification='left', key='-SIZEGRAF-')],
+    [sg.Column(column_table, key='-SIZETABLE-'), sg.VerticalSeparator(), sg.Column(column_graf, size=(500, 500), justification='right', key='-SIZEGRAF-')],
 ]
 
 # In[]:
-window = sg.Window('LAB1', layout, finalize=True, resizable=True, grab_anywhere=True)
+window = sg.Window('LAB2', layout, finalize=True, resizable=True, grab_anywhere=True)
 
 last_w_size = window.size
 
@@ -78,11 +77,13 @@ def update_title(table, headings):
 def on_resize(event):
     if (last_w_size != window.size):
         width, height = window.size
-        window.Element('-SIZETABLE-').set_size((window.size[0]/2 - 50, window.size[1]))
+        window.Element('-SIZETABLE-').set_size((window.size[0]/2-50, window.size[1]))
+        window.Element('-TABLE-').set_size((500, window.size[1]))
         window.Element('-SIZEGRAF-').set_size((window.size[0]/2, window.size[1]/1.4))
         window.Element('-CANVAS-').set_size((window.size[0]/2, window.size[1]/1.4))
         canvas_elem.Widget.pack(side="top", fill="both", expand=True)
-
+        window.FindElement('-DATA-').Update('')
+        
 window.TKroot.bind('<Configure>', on_resize)
 
 while True:                             # The Event Loop
@@ -94,23 +95,49 @@ while True:                             # The Event Loop
         break
     if event == 'Submit':
         selector = values['-SELECTOR-']
+        sel = list_q.index(selector)+1
         n = int(window.Element("-N-").Get())
-
-        # df = pd.read_table('output.txt', sep = "\t+", engine='python')
-
-        # table = window.Element("-TABLE-").Widget
-
-        # update_title(table, df.columns.tolist())
         
-        # window.Element("-TABLE-").Update(values = df.values.tolist())
+        x, v = method_balance(n, sel)
 
-        print(selector)
+        df = pd.DataFrame({
+            'x': x,
+            'v': v,
+        })
 
-        # list_x = [xi for xi in np.arange(0, 1, 0.0001)]
-        x, v = method_balance(n, 1)
-        list_u = [u(xi) for xi in x]
-        graf = plt.plot(x, list_u, "b-")
-        graf = plt.plot(x, v, "r-")
+        eps = 0
+        id = 0
+
+        if sel == 1:
+            list_u = [u(xi) for xi in x]
+            df.insert(loc = len(df.columns), column = 'u', value = list_u)
+            df.insert(loc = len(df.columns), column = '|u - v|', value = [math.fabs(ui - vi) for ui, vi in zip(list_u, v)])
+
+            eps = max([math.fabs(ui - vi) for ui, vi in zip(list_u, v)])
+            id = df[df["|u - v|"] == eps].index[0]
+
+            graf = plt.plot(df['x'], df['v'], 'b-')
+            graf = plt.plot(df['x'], df['u'], 'r-')
+        else:
+            x2, v2 = method_balance(2*n, sel)
+            v2_2 = [v2[i] for i in range(0, len(v2), 2)]
+            df.insert(loc = len(df.columns), column = 'v2', value = v2_2)
+            df.insert(loc = len(df.columns), column = '|v2 - v|', value = [math.fabs(v2i - vi) for v2i, vi in zip(v2_2, v)])
+
+            eps = max([math.fabs(v2i - vi) for v2i, vi in zip(v2_2, v)])
+            id = df[df["|v2 - v|"] == eps].index[0]
+
+            graf = plt.plot(x, v, 'b-')
+            graf = plt.plot(x, v2_2, 'r-')
+
+        table = window.Element("-TABLE-").Widget
+
+        update_title(table, df.columns.tolist())
+        
+        window.Element("-TABLE-").Update(values = df.values.tolist())
+
+        print("Вариант 1, Точка разрыва = 0.4, Диапозон = [0, 1]," + "\nколичество узлов = " + str(n+1) +  ",\nШаг сетки  = " + str(1/n) + "\n"
+              + "Максимальная погрешность = " + str(eps) + ", на шаге " + str(id))
 
         canvas.draw()
     if event == "Clear":
